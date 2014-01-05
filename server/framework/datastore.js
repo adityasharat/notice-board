@@ -33,20 +33,17 @@ module.exports = function (db, BSON, collectionName, modelName) {
         *
         * @method findById
         */
-        findById: function (condition, callback) {
+        find: function (condition, callback) {
             db.collection(collectionName, function (error, collection) {
                 if (error) {
                     throw error;
                 }
-                collection.find(
-                    condition,
-                    function (error, items) {
-                        if (error) {
-                            throw error;
-                        }
-                        callback(items);
+                collection.find(condition).toArray(function (error, items) {
+                    if (error) {
+                        throw error;
                     }
-                );
+                    callback(items);
+                });
             });
         },
 
@@ -59,8 +56,8 @@ module.exports = function (db, BSON, collectionName, modelName) {
             db.collection(collectionName, function (error, collection) {
                 if (error) {
                     throw error;
-                }0.
-                
+                }
+
                 collection.insert(item, {
                     safe: true
                 }, function (error, result) {

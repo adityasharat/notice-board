@@ -58,7 +58,7 @@ module.exports = function (db, BSON) {
 
         get : function (req, res) {
             try {
-                dataStore.getById({cid: req.params.cid}, function (feeds) {
+                dataStore.find({cid: req.params.channel}, function (feeds) {
                     res.json(200, {success: true, feeds: feeds});
                 });
             } catch (error) {
