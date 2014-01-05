@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Publish Message</title>
+</head>
+<body>
+    <div id="wrapper">
+        <div id="app-container">
+            <h3 id="heading">Publish your Message</h3>
+            <label for="message">Message: </label><input type="text" id="message">
+            <br>
+            <input type="button" id="button-publish" value="Publish">
+            <br>
+            <div id="success">Published</div>
+        </div>
+    </div>
+    <script src="scripts/jquery.js"></script>
+    <script>
+        var cid = $('#cid'),
+            message = $('#message'),
+            buttonPublish = $('#button-publish'),
+            successMessage = $('#success');
+
+        successMessage.hide();
+
+        buttonPublish.on('click', function () {
+            'use strict';
+            var feed = {
+                cid : 'test',
+                mid : '1',
+                message : message.val(),
+                type : 'text'
+            };
+
+            $.ajax({
+                url : 'http://localhost:8080/rest/feeds/test',
+                method : 'POST',
+                data : feed,
+                type: 'json',
+                success : function (data) {
+                    console.log(data);
+                    successMessage.fadeIn(200).delay(500).fadeOut(200);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
