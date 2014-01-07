@@ -133,5 +133,5 @@ server.listen(app.get('port'), function () {
 socketUtil.init(io);
 
 radio('feed-broadcast:test').subscribe(function (feed) {
-    socketUtil.broadcast('feed-pushed:' + feed.cid, feed);
+    socketUtil.broadcast('feed-pushed:', feed);
 });
