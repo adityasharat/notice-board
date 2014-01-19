@@ -10,25 +10,6 @@ module.exports = function (db, BSON, collectionName, modelName) {
     'use strict';
     return {
         /**
-        * Find all models
-        *
-        * @method findAll
-        */
-        getAll: function (callback) {
-            db.collection(collectionName, function (error, collection) {
-                if (error) {
-                    throw error;
-                }
-                collection.find().toArray(function (error, items) {
-                    if (error) {
-                        throw error;
-                    }
-                    callback(items);
-                });
-            });
-        },
-
-        /**
         * Find model by Id
         *
         * @method findById
@@ -65,6 +46,28 @@ module.exports = function (db, BSON, collectionName, modelName) {
                         throw error;
                     }
                     callback(result[0]);
+                });
+            });
+        },
+
+        /**
+        * update a model
+        *
+        * @method update
+        */
+        update: function (condition, item, callback) {
+            db.collection(collectionName, function (error, collection) {
+                if (error) {
+                    throw error;
+                }
+
+                collection.update(condition, item, {
+                    safe: true
+                }, function (error, result) {
+                    if (error) {
+                        throw error;
+                    }
+                    callback(result);
                 });
             });
         }

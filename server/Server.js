@@ -9,14 +9,14 @@
 'use strict';
 
 /* Dependencies */
-var express     = require('express'),
+var console     = require('./utils/console'),
+    express     = require('express'),
+    fs          = require('fs'),
     http        = require('http'),
-    socket      = require('socket.io'),
+    moment = require('moment'),
     mongo       = require('mongodb'),
-    socketUtil  = require('./utils/socketUtil'),
-    console     = require('./utils/console'),
     radio       = require('radio'),
-    fs          = require('fs');
+    socket      = require('socket.io');
 
 /* Configuration */
 var configPath  = __dirname + '/data/server.cfg',
@@ -26,7 +26,7 @@ try {
     config = JSON.parse(fs.readFileSync(configPath).toString());
 } catch (error) {
     console.error('There was an error reading the config file.\n' + error.message + '\nServer stopped.');
-    return;
+    process.exit(1);
 }
 
 
@@ -44,18 +44,16 @@ var databaseServer = new Database.Server(config.database.url, config.database.po
 });
 
 var db = new Database.Db(config.database.name, databaseServer);
-db.open(function (error, database) {});
 
 // -----------------------------------------------------------------------------
-// Domain
+// Domain and Framework
 // -----------------------------------------------------------------------------
 
-var users       = require('./domain/users')(db, Database.BSON),
-    feeds       = require('./domain/feeds')(db, Database.BSON),
-    channels    = require('./domain/channels')(db, Database.BSON),
-    auth        = require('./framework/authentication')(express, users),
-    activeUsers = require('./framework/activeUsers');
-
+var users,
+    feeds,
+    channels,
+    auth,
+    handler;
 
 // -----------------------------------------------------------------------------
 // App
@@ -64,7 +62,7 @@ var users       = require('./domain/users')(db, Database.BSON),
 var app = express();
 
 /* Configure Express */
-app.configure(function() {
+app.configure(function () {
     app.set('port', config.port);
     app.use(express.bodyParser());
 });
@@ -77,26 +75,17 @@ app.use(express.static(config.urls.web));
 // Routes
 // -----------------------------------------------------------------------------
 
-/* Route: Feeds */
-app.get(config.urls.rest.feeds, auth.basic, feeds.all);
-app.get(config.urls.rest.feeds + '/:channel', auth.basic, feeds.get);
-app.post(config.urls.rest.feeds + '/:channel', auth.publishers, feeds.post);
-app.put(config.urls.rest.feeds + '/:channel', auth.publishers, feeds.put);
-app.delete(config.urls.rest.feeds + '/:channel', auth.publishers, feeds.delete);
-
-/* Route: Channels */
-app.get(config.urls.rest.channels, auth.basic, channels.all);
-app.get(config.urls.rest.channels + '/:channel', auth.basic, channels.get);
-app.post(config.urls.rest.channels + '/:channel', auth.publishers, channels.post);
-app.put(config.urls.rest.channels + '/:channel', auth.publishers, channels.put);
-app.delete(config.urls.rest.channels + '/:channel', auth.publishers, channels.delete);
-
 /* Route : publish via web app */
 app.get('/publish', function (req, res) {
     res.sendfile('./client/publish.html');
 });
 
-/* Route: all others go to the defult client webapp */
+/* Route : client via web app */
+app.get('/client', function (req, res) {
+    res.sendfile('./client/index.html');
+});
+
+/* Route: all others go to the defult client webapp for now */
 app.get('*', function (req, res) {
     res.sendfile('./client/index.html');
 });
@@ -109,29 +98,35 @@ app.get('*', function (req, res) {
 var server  = http.createServer(app),
     io      = socket.listen(server);
 
+// Log socket connections and disconnections
 io.set('log level', 1);
 
-// Log socket connections and disconnections
-io.sockets.on('connection', function (socket) {
-    console.info(socket.id + ' connected');
+db.open(function (error) {
 
-    socket.on('disconnect', function () {
-        console.info(socket.id + ' disconnected');
+    if (error) {
+        console.error('There was an error connecting to the database.\n' + error.message + '\nServer stopped.');
+        process.exit(1);
+    }
+
+    console.info('Connection to database established');
+
+    users       = require('./domain/users')(db, Database.BSON);
+    feeds       = require('./domain/feeds')(db, Database.BSON);
+    channels    = require('./domain/channels')(db, Database.BSON);
+    auth        = require('./framework/authentication')(express, users);
+    handler     = require('./framework/handler');
+
+    // start up web socket server
+    io.sockets.on('connection', handler);
+
+    // let the magic begin
+    server.listen(app.get('port'), function () {
+        console.info("Express server listening on port " + app.get('port'));
     });
 });
-
-
-server.listen(app.get('port'), function () {
-    console.info("Express server listening on port " + app.get('port'));
-});
-
 
 // -----------------------------------------------------------------------------
 // Feed Broadcast Processing
 // -----------------------------------------------------------------------------
 
-socketUtil.init(io);
-
-radio('feed-broadcast:test').subscribe(function (feed) {
-    socketUtil.broadcast('feed-pushed:', feed);
-});
+/* Coming Soon */

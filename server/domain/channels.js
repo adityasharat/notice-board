@@ -7,21 +7,20 @@
 /*jshint node:true */
 'use strict';
 module.exports = function (db, BSON) {
+    var dataStore = require('../framework/dataStore')(db, BSON, 'channels', 'channel');
+
     return {
-        all : function (req, res) {
+        create : function (channel, callback) {
 
         },
-        get : function (req, res) {
+        read : function (condition, callback) {
 
         },
-        post : function (req, res) {
+        update : function (condition, callback) {
 
         },
-        put : function (req, res) {
+        delete : function (condition, callback) {
 
         },
-        delete : function (req, res) {
-
-        }
     };
 };

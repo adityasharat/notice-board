@@ -8,16 +8,15 @@
 
 'use strict';
 
-module.exports = function (express, users) {
-    var result = function () {
-        return true;
-    };
+var console = require('../utils/console');
 
-    var _basic = function (req, res, next) {
+module.exports = function (users) {
+
+    var _basic = function (data, next) {
         next();
     };
 
-    var _publisher = function (req, res, next) {
+    var _publisher = function (data, next) {
         next();
     };
 

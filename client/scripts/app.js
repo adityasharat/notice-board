@@ -87,7 +87,7 @@
 
     buttonRefresh.removeClass('hide');
 
-    socket.on('feed-pushed:test', function (feeds) {
+    socket.on('feed-pushed', function (feeds) {
         renderFeed(feeds, false);
     });
 }());
