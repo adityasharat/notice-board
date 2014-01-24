@@ -31,37 +31,35 @@
 
     /*global io*/
     /* initialization */
+
+    // ***************************************************************
+    // Needs to be re done
+    // ***************************************************************
     domain = 'http://localhost';
-    port = '8080';
-    api = {
-        feeds : {
-            refresh : domain + ':' + port + '/rest/feeds/test'
-        }
-    };
-    socket = io.connect('http://localhost');
+    socket = io.connect(domain);
     feeds = $('#feeds');
     counter = $('#counter');
     buttonRefresh = $('#button-refresh');
     renderFeed = function (feed) {
-        var element;
+       /* var element;
         element = $($('<li>' + feed.message + '</li>'));
         if (feed.message) {
             element.addClass(colors[colorIndex % colors.length]);
             feeds.prepend(element.hide());
             element.slideDown(200);
             colorIndex++;
-        }
+        }*/
     };
     renderFeeds = function (ListOfFeeds, clear) {
-        if (clear) {
+        /*if (clear) {
             feeds.html('');
         }
         ListOfFeeds.forEach(function (feed) {
             renderFeed(feed);
-        });
+        });*/
     };
     refreshFeeds = function () {
-        appContainer.addClass('overlayEffect');
+        /*appContainer.addClass('overlayEffect');
         $.getJSON(api.feeds.refresh, function (response) {
             if (response.success) {
                 renderFeeds(response.feeds, true);
@@ -78,7 +76,7 @@
             }
         }).always(function () {
             appContainer.removeClass('overlayEffect');
-        });
+        });*/
     };
 
     buttonRefresh.on('click', refreshFeeds);

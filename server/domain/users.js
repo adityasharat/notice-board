@@ -38,6 +38,14 @@ module.exports = function (db, BSON) {
             } catch (error) {
                 console.error(error.message);
             }
+        },
+
+        delete : function (condition, callback) {
+            try {
+                dataStore.delete(condition, callback);
+            } catch (error) {
+                console.error(error.message);
+            }
         }
     };
 };
