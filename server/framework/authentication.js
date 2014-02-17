@@ -13,11 +13,15 @@ var console = require('../utils/console');
 module.exports = function (users) {
 
     var _basic = function (data, next) {
-        next();
+        if (next) {
+            next();
+        }
     };
 
     var _publisher = function (data, next) {
-        next();
+        if (next) {
+            next();
+        }
     };
 
     return {

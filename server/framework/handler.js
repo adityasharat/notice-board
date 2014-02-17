@@ -7,16 +7,26 @@
 /*jshint node:true */
 'use strict';
 
-var auth        = require('../framework/authentication')(),
-    callbacks   = require('../utils/callbacks'),
+var callbacks   = require('../utils/callbacks'),
     console     = require('../utils/console'),
     disconnect,
-    login;
+    login,
+    store,
+    auth;
 
-var _users, _feeds, _channels, _auth;
+var feeds;
+
+feeds = {
+    get : function (data, next) {
+        this.emit('data', {data: data});
+        if (next) {
+            next();
+        }
+    }
+};
 
 login = function (data, next) {
-    if (next) {
+    if (next || data) {
         next();
     }
     return;
@@ -26,17 +36,13 @@ disconnect = function () {
     console.info(this.id + ' disconnected');
 };
 
-module.exports = function (users, feeds, channels, auth) {
-    _users = users;
-    _feeds = feeds;
-    _channels = channels;
-    _auth = auth;
+module.exports = function (dataStore, auth) {
+    store = dataStore;
 
     return function (socket) {
         console.info(socket.id + ' connected');
         socket.on('login', callbacks(this, auth.basic, login));
-        //socket.on('refresh', refresh);
-        //socket.on('logout', logout);
+        socket.on('feeds-get', callbacks(this, auth.basic, feeds.get));
         socket.on('disconnect', disconnect);
     };
 };

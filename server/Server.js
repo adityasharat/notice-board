@@ -114,7 +114,11 @@ db.open(function (error) {
     feeds       = require('./domain/feeds')(db, Database.BSON);
     channels    = require('./domain/channels')(db, Database.BSON);
     auth        = require('./framework/authentication')(express, users);
-    handler     = require('./framework/handler')(users, feeds, channels, auth);
+    handler     = require('./framework/handler')({
+        users : users,
+        feeds : feeds,
+        channels : channels
+    }, auth);
 
     // start up web socket server
     io.sockets.on('connection', handler);

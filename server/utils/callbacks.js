@@ -5,7 +5,8 @@ module.exports = function () {
         context = methods[0],
         index = 0,
         params,
-        next;
+        next,
+        end;
 
     next = function () {
         index = index + 1;
@@ -13,6 +14,12 @@ module.exports = function () {
             methods[index].apply(context, params);
         }
     };
+
+    end = function () {
+        index = 0;
+    };
+
+    methods[methods.length] = end;
 
     return function () {
         params = Array.prototype.slice.call(arguments, 0);

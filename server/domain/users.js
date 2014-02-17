@@ -11,7 +11,7 @@ var console = require('../utils/console'),
     dataStore,
     moment = require('moment'),
     crypto = require('../utils/crypto'),
-    User = require('/models/User');
+    User = require('./models/User');
 
 var createUser = function (user) {
         return user;
