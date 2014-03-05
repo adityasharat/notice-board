@@ -16,9 +16,31 @@ var callbacks   = require('../utils/callbacks'),
 
 var feeds;
 
+// TODO : create a seperate modules for different handlers
 feeds = {
     get : function (data, next) {
-        this.emit('data', {data: data});
+        // TODO : implement flow to fetch data from store
+        // TODO : implement validation
+        
+        this.emit('data', {data: data});    // testing communication
+        if (next) {
+            next();
+        }
+    },
+
+    post : function (data, next) {
+        // TODO : implement flow to insert data into store
+        // TODO : implement validation
+
+        if (next) {
+            next();
+        }
+    },
+    
+    put : function (data, next) {
+        // TODO : implement flow to update data into store
+        // TODO : implement validation
+
         if (next) {
             next();
         }
@@ -26,6 +48,7 @@ feeds = {
 };
 
 login = function (data, next) {
+    // TODO : implement login flow
     if (next || data) {
         next();
     }
